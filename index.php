@@ -1,72 +1,56 @@
-<?php
-
-require_once 'config/config.php';
-
-$user_id = "root";
-$user_email = "root";
-
-$buttons = [
-    'Login',
-    'Logout',
-    'Create Records',
-    'Update Record',
-    'Delete Record',
-    'View Record',
-    'Upload File',
-    'Download',
-    'Search',
-    'Generate Report',
-];
-
-?>
-
-<table border="1" cellpadding="10">
-    <tr>
-        <th>Action</th>
-        <th>Test</th>
-    </tr>
-
-    <?php foreach ($buttons as $button): ?>
-        <tr>
-            <td><?= htmlspecialchars($button) ?></td>
-            <td>
-                <form method="post">
-                    <input
-                        type="hidden"
-                        name="action"
-                        value="<?= htmlspecialchars($button) ?>"
-                    >
-                    <button type="submit">Test</button>
-                </form>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-
-</table>
 
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/config/functions.php';
 
-    $action = $_POST['action'] ?? 'test_activity';
 
-    $status = random_int(0, 1) === 1 ? 'success' : 'failed';
 
-    $success = logActivity(
-        $pdo,
-        $user_id,
-        $user_email,
-        $action,
-        $status
-    );
-
-    if ($success) {
-        echo "<p>Activity: " . htmlspecialchars($action) .
-             " | Status: " . htmlspecialchars($status) .
-             " | Log inserted successfully</p>";
-    } else {
-        echo "<p>Failed to insert activity log</p>";
-    }
+if (isset($_SESSION['user_id'])) {
+    header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+    exit;
 }
 
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $login = trim($_POST['login'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    if (loginUser($pdo, $login, $password)) {
+        echo 'Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php';
+        header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+        exit;
+    }
+
+    $error = 'Invalid username/email or password.';
+}
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+
+<h1>PHP PDO Authentication</h1>
+
+<?php if ($error): ?>
+    <p><?= htmlspecialchars($error) ?></p>
+<?php endif; ?>
+
+<form method="POST">
+    <label>Username or Email</label><br>
+    <input type="text" name="login" required><br><br>
+
+    <label>Password</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <button type="submit">Sign In</button>
+</form>
+
+</body>
+</html>

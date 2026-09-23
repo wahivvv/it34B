@@ -1,6 +1,6 @@
 <?php
 require '../../config/config.php';
-require '../../config/functions.php';
+
 
 requireRole('admin');
 
@@ -39,7 +39,9 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
 
     <h2 style="text-align: center;">
-        CREATED BY: RENE BATERBONIA "MVP"
+        RENE CLERT BATERBONIA 
+    <h2 style="text-align: center;">
+            "MVP"
     </h2>
 </head>
 <body>
@@ -74,4 +76,6 @@ $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </table>
 </body>
 </html>
-<h1> <a href="../../auth/signout.php">Sign Out</a> <h1>
+
+<h1> <a href="../../auth/signout.php">Sign Out<h1>
+

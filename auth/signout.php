@@ -4,7 +4,7 @@ require_once '../config/config.php';
 if(isset($_SESSION['user_id'])){
     logActivity($pdo,$S_SESSION['user_id'], $_SESSION['user_email'],'logout', 'success');
 }
-
+//end
 endUserSession($pdo);
 
 $_SESSION = [];

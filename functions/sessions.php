@@ -52,4 +52,58 @@ function endUserSession($pdo){
 
 }
 
+function hasActiveUserSession($pdo,$user_id){
+
+$stmt = $pdo->prepare("
+    SELECT session_id
+    FROM user_sessions
+    WHERE user_id = :user_id
+    AND session_end IS NULL
+    LIMIT 1
+    ");
+
+    $stmt->execute([
+        'user_id' => $user_id
+    ]);
+    
+    return (bool) $stmt->fetchColumn();
+}
+
+function checkSessionTimeout(){
+    global  $pdo;
+
+    //Timeout variable
+    //10 seconds for testing
+    $timeout = 10;
+
+    if(isset($_SESSION['last_activity'])){
+        
+        $inactive = time() - $_SESSION['last_activity'];
+
+        if($inactive>=$timeout){
+            logActivity(
+                $pdo,
+                $_SESSION['user_id'],
+                $_SESSION['user_email'] ?? null,
+                'logout-session-timeout',
+                'success'
+
+            );
+        }
+
+        endUserSession($pdo);
+
+        session_unset();
+        session_destroy();
+
+        header(
+            'Location: '. 
+            BASE_URL . 
+            '/index.php?timeout=1'
+        );
+    }
+
+    $_SESSION['last_activity'] = time();
+        
+}
 ?>

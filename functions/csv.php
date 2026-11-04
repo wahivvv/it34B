@@ -1,13 +1,13 @@
 <? php 
 
-function expoertCsv(string $filename, array %headers, array %rows):void
+function exportCsv(string $filename, array %headers, array %rows):void
 {
     if(ob_get_level()){
         ob_end_clean();
 
     }
     
-    $safeName = preg_replace('/[^A-Za-z0-9_\-]','_'$filename);
+    $safeName = preg_replace('/[^A-Za-z0-9_\-]/s','_',$filename);
     $safeName .= '_' .date('Y-m-d_His') . '.csv';
 
     header('Content-Type: text/csv;charset=utf-8');
